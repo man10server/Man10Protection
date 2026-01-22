@@ -4,6 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import io.papermc.paper.event.player.PlayerOpenSignEvent
+import org.bukkit.Material
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.CrafterCraftEvent
@@ -27,6 +28,7 @@ class Man10ProtectionListener {
     @SEventHandler(priority = EventPriority.LOWEST)
     fun onPlaceCrafter(e: BlockPlaceEvent) {
         val block = e.block
+        if (block.type != Material.CRAFTER) return
         val query = WorldGuard.getInstance().platform.regionContainer.createQuery()
         val location = BukkitAdapter.adapt(block.location)
         val player = WorldGuardPlugin.inst().wrapPlayer(e.player)
@@ -35,8 +37,8 @@ class Man10ProtectionListener {
             e.player.sendMessage(
                 WorldGuardPlugin.inst()
                     .configManager
-                    .get(player.world)
-                    .buildPermissionDenyMessage
+                    .get(player.world.name)
+                    ?.buildPermissionDenyMessage ?: "You don't have permission to place crafter here."
             )
         }
     }
